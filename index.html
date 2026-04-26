@@ -5,158 +5,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minutograma - Fontanar del Río</title>
+    <title>Minutograma de Producción - Fontanar del Río</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .row-show { border-left: 4px solid #8b5cf6; }
-        .row-audio { border-left: 4px solid #3b82f6; }
-        .row-protocol { border-left: 4px solid #f59e0b; }
-        .row-logistics { border-left: 4px solid #64748b; }
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap');
+        body { font-family: 'Lexend', sans-serif; background: #fdfdfd; }
+        .stage-badge { @apply text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useMemo } = React;
+        const { useState } = React;
 
-        const DATA = [
-            { id: 1, orden: "-", actividad: "Instalación Carpas", inicio: "1:30 PM", fin: "2:00 PM", duracion: "0:30", pista: "-", tipo: "Logística" },
-            { id: 2, orden: "1", actividad: "Audio apertura (Cambio grupos)", inicio: "2:00 PM", fin: "2:01 PM", duracion: "0:01", pista: "Gemini", tipo: "Audio" },
-            { id: 3, orden: "-", actividad: "Adecuación mesas por grupo", inicio: "2:01 PM", fin: "2:15 PM", duracion: "0:14", pista: "-", tipo: "Logística" },
-            { id: 4, orden: "2", actividad: "Audio antes de comenzar las presentaciones", inicio: "2:15 PM", fin: "2:16 PM", duracion: "0:01", pista: "Gemini", tipo: "Audio" },
-            { id: 5, orden: "-", actividad: "Preparación vestuario", inicio: "2:16 PM", fin: "2:30 PM", duracion: "0:14", pista: "-", tipo: "Logística" },
-            { id: 6, orden: "3", actividad: "Audio de apertura", inicio: "2:30 PM", fin: "2:31 PM", duracion: "0:01", pista: "Gemini", tipo: "Audio" },
-            { id: 7, orden: "-", actividad: "Apertura Feria - Santiago Cortes", inicio: "2:35 PM", fin: "2:40 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 8, orden: "-", actividad: "Apertura Xiscuy Ticuy - Santiago Cortes", inicio: "2:40 PM", fin: "2:45 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 9, orden: "4", actividad: "Presentación Xiscuy Ticuy", inicio: "2:45 PM", fin: "2:55 PM", duracion: "0:08", pista: "Merengues campesinos (Cundiboyacense)", tipo: "Show" },
-            { id: 10, orden: "-", actividad: "Apertura Danza Apoteósica - Santiago Cortes", inicio: "2:55 PM", fin: "3:00 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 11, orden: "5", actividad: "Presentación Danza Apoteósica", inicio: "3:00 PM", fin: "3:05 PM", duracion: "0:05", pista: "Coqueta", tipo: "Show" },
-            { id: 12, orden: "-", actividad: "Apertura Danza Viva - Santiago Cortes", inicio: "3:05 PM", fin: "3:10 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 13, orden: "6", actividad: "Presentación Danza Viva", inicio: "3:10 PM", fin: "3:17 PM", duracion: "0:06", pista: "Ay cosita Linda", tipo: "Show" },
-            { id: 14, orden: "-", actividad: "Apertura Colectivo Tanz - Santiago Cortes", inicio: "3:17 PM", fin: "3:22 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 15, orden: "7", actividad: "Presentación Colectivo Tanz", inicio: "3:22 PM", fin: "3:25 PM", duracion: "0:10", pista: "clase de ballet en el Warm up", tipo: "Show" },
-            { id: 16, orden: "-", actividad: "Break", inicio: "3:25 PM", fin: "3:40 PM", duracion: "0:15", pista: "-", tipo: "Logística" },
-            { id: 17, orden: "-", actividad: "Apertura Herencia en Movimiento - Santiago Cortes", inicio: "3:40 PM", fin: "3:45 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 18, orden: "8", actividad: "Herencia en Movimiento", inicio: "3:45 PM", fin: "4:00 PM", duracion: "0:13", pista: "Amor y cultura de mi tierra santa", tipo: "Show" },
-            { id: 19, orden: "-", actividad: "Apertura Paso a paso dejando huella - Santiago Cortes", inicio: "4:00 PM", fin: "4:05 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 20, orden: "9", actividad: "Presentación Paso a paso dejando huella", inicio: "4:05 PM", fin: "4:10 PM", duracion: "0:04", pista: "La Pringamosa - Aires Moniquireños", tipo: "Show" },
-            { id: 21, orden: "-", actividad: "Apertura Grupo luz de vida - Santiago Cortes", inicio: "4:10 PM", fin: "4:15 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 22, orden: "10", actividad: "Presentación Grupo Luz de vida", inicio: "4:15 PM", fin: "4:25 PM", duracion: "0:06", pista: "Tolu y quiero amanecer", tipo: "Show" },
-            { id: 23, orden: "-", actividad: "Apertura Folclor Latino - Santiago Cortes", inicio: "4:25 PM", fin: "4:30 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 24, orden: "11", actividad: "Presentación Folclor Latino", inicio: "4:30 PM", fin: "4:35 PM", duracion: "0:04", pista: "Grupo Libertad - Waitipan", tipo: "Show" },
-            { id: 25, orden: "12", actividad: "Folclor Latino", inicio: "4:35 PM", fin: "4:45 PM", duracion: "0:08", pista: "popurry danza indigena legado ancestral", tipo: "Show" },
-            { id: 26, orden: "13", actividad: "Presentación Xiscuy Ticuy", inicio: "4:45 PM", fin: "4:55 PM", duracion: "0:05", pista: "Mix de son sureño (Nariño)", tipo: "Show" },
-            { id: 27, orden: "14", actividad: "Presentación Colectivo Tanz", inicio: "4:55 PM", fin: "5:15 PM", duracion: "0:10", pista: "Ser Artista Mujer", tipo: "Show" },
-            { id: 28, orden: "15", actividad: "Presentación Grupo Luz de vida (Bloque 2)", inicio: "5:15 PM", fin: "5:20 PM", duracion: "0:05", pista: "Pista Luz de vida", tipo: "Show" },
-            { id: 29, orden: "-", actividad: "Agradecimiento y cierre - Santiago Cortes", inicio: "5:20 PM", fin: "5:25 PM", duracion: "0:05", pista: "-", tipo: "Protocolo" },
-            { id: 30, orden: "-", actividad: "Vestuario y cierre evento", inicio: "5:30 PM", fin: "6:00 PM", duracion: "0:30", pista: "-", tipo: "Logística" },
-            { id: 31, orden: "-", actividad: "Desmontaje Carpas, sillas y Mesas", inicio: "6:00 PM", fin: "6:30 PM", duracion: "0:30", pista: "-", tipo: "Logística" }
+        const PROGRAMACION = [
+            { orden: "-", act: "Instalación Carpas", ini: "1:30", fin: "2:00", dur: "-", pista: "-", tipo: "Logística" },
+            { orden: "1", act: "Audio apertura (mientras los grupos se cambian)", ini: "2:00", fin: "2:01", dur: "-", pista: "Gemini", tipo: "Audio" },
+            { orden: "-", act: "Adecuación mesas por grupo", ini: "2:01", fin: "2:15", dur: "-", pista: "-", tipo: "Logística" },
+            { orden: "2", act: "Audio antes de comenzar las presentaciones", ini: "2:15", fin: "2:16", dur: "-", pista: "Gemini", tipo: "Audio" },
+            { orden: "-", act: "Preparación vestuario", ini: "2:16", fin: "2:30", dur: "-", pista: "-", tipo: "Logística" },
+            { orden: "3", act: "Audio de apertura", ini: "2:30", fin: "2:31", dur: "-", pista: "Gemini", tipo: "Audio" },
+            { orden: "-", act: "Apertura Feria - Santiago Cortes", ini: "2:35", fin: "2:40", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "4.0", act: "Apertura Xiscuy Ticuy - Santiago Cortes", ini: "2:40", fin: "2:45", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "4", act: "Presentación Xiscuy Ticuy", ini: "2:45", fin: "2:55", dur: "0:08", pista: "Merengues campesinos (Cundiboyacense)", tipo: "Show" },
+            { orden: "5.0", act: "Apertura Danza Apoteósica - Santiago Cortes", ini: "2:55", fin: "3:00", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "5", act: "Presentación Danza Apoteósica", ini: "3:00", fin: "3:05", dur: "0:05", pista: "Coqueta", tipo: "Show" },
+            { orden: "6.0", act: "Apertura Danza Viva - Santiago Cortes", ini: "3:05", fin: "3:10", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "6", act: "Presentación Danza Viva", ini: "3:10", fin: "3:17", dur: "0:06", pista: "Ay cosita Linda", tipo: "Show" },
+            { orden: "7.0", act: "Apertura Colectivo Tanz - Santiago Cortes", ini: "3:17", fin: "3:22", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "7", act: "Presentación Colectivo Tanz", ini: "3:22", fin: "3:25", dur: "0:10", pista: "clase de ballet en el Warm up.", tipo: "Show" },
+            { orden: "-", act: "Break", ini: "3:25", fin: "3:40", dur: "-", pista: "-", tipo: "Logística" },
+            { orden: "8.0", act: "Apertura Herencia en Movimiento - Santiago Cortes", ini: "3:40", fin: "3:45", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "8", act: "Herencia en Movimiento", ini: "3:45", fin: "4:00", dur: "0:13", pista: "Amor y cultura de mi tierra santa", tipo: "Show" },
+            { orden: "9.0", act: "Apertura Paso a paso dejando huella - Santiago Cortes", ini: "4:00", fin: "4:05", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "9", act: "Presentación Paso a paso dejando huella", ini: "4:05", fin: "4:10", dur: "0:04", pista: "La Pringamosa - Aires Moniquireños", tipo: "Show" },
+            { orden: "10.0", act: "Apertura Grupo luz de vida - Santiago Cortes", ini: "4:10", fin: "4:15", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "10", act: "Presentación Grupo Luz de vida", ini: "4:15", fin: "4:25", dur: "0:06", pista: "Tolu y quiero amanecer", tipo: "Show" },
+            { orden: "11.0", act: "Apertura Folclor Latino - Santiago Cortes", ini: "4:25", fin: "4:30", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "11", act: "Presentación Folclor Latino", ini: "4:30", fin: "4:35", dur: "0:04", pista: "Grupo Libertad - Waitipan", tipo: "Show" },
+            { orden: "12", act: "Folclor Latino", ini: "4:35", fin: "4:45", dur: "0:08", pista: "popurry danza indigena legado ancestral", tipo: "Show" },
+            { orden: "13", act: "Presentación Xiscuy Ticuy", ini: "4:45", fin: "4:55", dur: "0:05", pista: "Mix de son sureño (Nariño)", tipo: "Show" },
+            { orden: "14", act: "Presentación Colectivo Tanz", ini: "4:55", fin: "5:15", dur: "0:10", pista: "Ser Artista Mujer.", tipo: "Show" },
+            { orden: "15", act: "Presentación Grupo Luz de vida", ini: "5:15", fin: "5:20", dur: "0:05", pista: "Pista Luz de vida", tipo: "Show" },
+            { orden: "-", act: "Agradecimiento y cierre - Santiago Cortes", ini: "5:20", fin: "5:25", dur: "-", pista: "-", tipo: "Protocolo" },
+            { orden: "-", act: "Vestuario y cierre evento", ini: "5:30", fin: "6:00", dur: "-", pista: "-", tipo: "Logística" },
+            { orden: "-", act: "Desmontaje Carpas, sillas y Mesas", ini: "6:00", fin: "6:30", dur: "-", pista: "-", tipo: "Logística" }
         ];
 
         const App = () => {
-            const [filter, setFilter] = useState('Todos');
+            const [activeFilter, setActiveFilter] = useState('Todos');
 
-            const filteredData = useMemo(() => {
-                return filter === 'Todos' ? DATA : DATA.filter(item => item.tipo === filter);
-            }, [filter]);
-
-            const getRowClass = (tipo) => {
-                switch(tipo) {
-                    case 'Show': return 'row-show';
-                    case 'Audio': return 'row-audio';
-                    case 'Protocolo': return 'row-protocol';
-                    default: return 'row-logistics';
-                }
-            };
+            const filtered = PROGRAMACION.filter(i => activeFilter === 'Todos' || i.tipo === activeFilter);
 
             return (
-                <div className="max-w-7xl mx-auto p-4 md:p-10">
-                    <header className="mb-10 text-center md:text-left border-b pb-6 border-slate-300">
-                        <div className="flex flex-col md:flex-row justify-between items-end gap-4">
-                            <div>
-                                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">MINUTOGRAMA PARQUE FONTANAR DEL RIO</h1>
-                                <p className="text-lg text-slate-600 mt-2">Parque Fontanar del Río | Primer Feria Artistica Danza Suba Motion IA</p>
-                            </div>
-                            <div className="bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-200">
-                                <span className="text-xs font-bold text-slate-400 uppercase block mb-1">Total Pistas</span>
-                                <span className="text-2xl font-black text-blue-600">15</span>
-                            </div>
-                        </div>
+                <div className="max-w-6xl mx-auto p-6 md:p-12">
+                    <header className="mb-12 border-l-8 border-indigo-600 pl-6">
+                        <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">MINUTOGRAMA OFICIAL</h1>
+                        <p className="text-slate-500 font-medium">Evento: Parque Fontanar del Río | Consolidado Final</p>
                     </header>
 
-                    <div className="flex flex-wrap gap-3 mb-8 justify-center md:justify-start">
-                        {['Todos', 'Show', 'Protocolo', 'Audio', 'Logística'].map(cat => (
-                            <button 
-                                key={cat}
-                                onClick={() => setFilter(cat)}
-                                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all transform hover:scale-105 ${
-                                    filter === cat ? 'bg-slate-900 text-white shadow-xl ring-4 ring-slate-200' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-400'
-                                }`}
-                            >
-                                {cat}
+                    <div className="flex flex-wrap gap-2 mb-8">
+                        {['Todos', 'Show', 'Protocolo', 'Audio', 'Logística'].map(f => (
+                            <button key={f} onClick={() => setActiveFilter(f)} 
+                                className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
+                                    activeFilter === f ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-500 border hover:bg-slate-50'
+                                }`}>
+                                {f}
                             </button>
                         ))}
                     </div>
 
-                    <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-slate-50 border-b-2 border-slate-100">
-                                    <tr>
-                                        <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Pista</th>
-                                        <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest">Actividad y Responsable</th>
-                                        <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Cronograma</th>
-                                        <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Min.</th>
-                                        <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest">Archivo de Audio</th>
+                    <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                        <table className="w-full text-left">
+                            <thead className="bg-slate-50 border-b border-slate-200">
+                                <tr>
+                                    <th className="p-4 text-[11px] font-black text-slate-400 uppercase text-center">Orden</th>
+                                    <th className="p-4 text-[11px] font-black text-slate-400 uppercase">Actividad</th>
+                                    <th className="p-4 text-[11px] font-black text-slate-400 uppercase text-center">Horario</th>
+                                    <th className="p-4 text-[11px] font-black text-slate-400 uppercase">Pista</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {filtered.map((item, idx) => (
+                                    <tr key={idx} className="hover:bg-indigo-50/30 transition-colors">
+                                        <td className="p-4 text-center font-mono text-sm font-bold text-slate-400">{item.orden}</td>
+                                        <td className="p-4">
+                                            <div className="text-sm font-bold text-slate-800 uppercase leading-tight">{item.act}</div>
+                                            <span className={`stage-badge mt-1 inline-block ${
+                                                item.tipo === 'Show' ? 'bg-purple-100 text-purple-600' :
+                                                item.tipo === 'Protocolo' ? 'bg-amber-100 text-amber-600' :
+                                                item.tipo === 'Audio' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'
+                                            }`}>{item.tipo}</span>
+                                        </td>
+                                        <td className="p-4 text-center whitespace-nowrap">
+                                            <span className="text-xs font-black text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                                                {item.ini} - {item.fin}
+                                            </span>
+                                        </td>
+                                        <td className="p-4">
+                                            <span className="text-xs font-semibold text-indigo-600 italic">
+                                                {item.pista !== '-' ? item.pista : ''}
+                                                {item.dur !== '-' && <span className="ml-2 text-slate-300 font-normal">({item.dur})</span>}
+                                            </span>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {filteredData.map(item => (
-                                        <tr key={item.id} className={`hover:bg-slate-50/80 transition-all ${getRowClass(item.tipo)}`}>
-                                            <td className="p-5 text-center font-black text-slate-300 text-lg">
-                                                {item.orden !== '-' ? item.orden : ''}
-                                            </td>
-                                            <td className="p-5">
-                                                <div className="text-base font-bold text-slate-800 uppercase tracking-tight">{item.actividad}</div>
-                                                <div className="flex items-center gap-2 mt-1.5">
-                                                    <span className={`text-[10px] px-2 py-0.5 rounded-md font-black uppercase ${
-                                                        item.tipo === 'Show' ? 'bg-purple-100 text-purple-700' :
-                                                        item.tipo === 'Audio' ? 'bg-blue-100 text-blue-700' :
-                                                        item.tipo === 'Protocolo' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'
-                                                    }`}>
-                                                        {item.tipo}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td className="p-5 text-center">
-                                                <div className="inline-flex items-center bg-slate-100 px-3 py-1 rounded-full text-sm font-bold text-slate-700 whitespace-nowrap">
-                                                    {item.inicio} <span className="mx-2 text-slate-400 opacity-50">|</span> {item.fin}
-                                                </div>
-                                            </td>
-                                            <td className="p-5 text-center text-xs font-black text-slate-400 italic">
-                                                {item.duracion}
-                                            </td>
-                                            <td className="p-5">
-                                                <div className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 inline-block">
-                                                    {item.pista !== '-' ? item.pista : 'N/A'}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                    
-                    <footer className="mt-8 text-center text-slate-400 text-xs font-medium">
-                        Sincronización final basada en el ajuste técnico de la Pista 10 y 15.
-                    </footer>
                 </div>
             );
         };
